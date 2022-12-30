@@ -77,7 +77,7 @@ def on_disconnect(client, userdata, mid):
     @brief Function to setup the basic configuration
 '''
 def mqtt_set_cfgs(
-        client_id='0', 
+        client_id=None, 
         broker='mqtt.eclipseprojects.io', 
         port=1883, 
         Qos=2, 
@@ -137,4 +137,6 @@ def run_app():
 
 # Run the application from the entry point.
 if __name__ == "__main__":
+    
+    # Run the MQTT application.
     run_app()

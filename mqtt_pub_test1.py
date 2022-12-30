@@ -130,6 +130,8 @@ def run_app():
             msg = "Hello!"
 
             publish(client, topic, msg)
+
+            time.sleep(0.5)
     except: 
         client.disconnect()
         client.loop_stop()
@@ -140,15 +142,6 @@ def run_app():
 
 # Run the application from the entry point.
 if __name__ == "__main__":
-
-    # Convert firmware file into list.
-    firmware_file_name = f'CAN_PROTOCOL_TEST.hex'
-
-    with open(firmware_file_name, 'r', encoding='ascii') as firmware_file:
-        firmware_lines = [line.rstrip() for line in firmware_file]
-
-    for i in range(len(firmware_lines)):
-        print(firmware_lines[i])
 
     # Run the MQTT application.
     run_app()
