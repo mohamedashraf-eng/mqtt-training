@@ -5,6 +5,7 @@ import time
 import colorama 
 from colorama import Fore
 import random
+import os
 # =============================================================================
 # Global constants
 
@@ -26,6 +27,16 @@ password = f'mohamed-ashraf'
 topic = 'mqtt_testing_python/chat_app/test1'
 # =============================================================================
 # Functions implementation
+
+firmware = []
+def load_firmware(dir_name=None, file_name=None, file_extension=None):
+
+    file_path_name = f'{dir_name}/{file_name}.{file_extension}'
+    with open(f'CAN_PROTOCOL_TEST.hex', 'r') as file:
+        for line in file.readlines():
+            firmware.append(line)
+
+    print(f'{Fore.GREEN}Loading the firmware done.')
 
 '''
     @brief Callback Function to print the status on connection.
@@ -70,8 +81,12 @@ def mqtt_set_cfgs(
         Qos=2, 
         username=None, 
         password=None):
+
+    # Constructing setter
+
+
     # Set up the basic configurations
-    client = mqtt.Client(client_id)
+    client = mqtt.Client(client_id, clean_session=True)
     client.username_pw_set(username, password)
     # Callbacks
     client.on_connect = on_connect
@@ -79,8 +94,6 @@ def mqtt_set_cfgs(
     client.on_disconnect = on_disconnect
     client.on_subscribe = on_subscribe
     client.on_unsubscribe = on_unsubscribe
-    # Connect to the broker
-    client.connect(broker_address, port, Qos)
 
     return client
 
@@ -95,8 +108,10 @@ def connect_mqtt():
                 port,
                 Qos,
                 username,
-                password)
-    
+                password)       
+    # Connect to the broker
+    client.connect(broker_address, port, Qos)
+
     return client
 
 '''
@@ -113,9 +128,6 @@ def publish(client=None, topic=None, message=None):
     else:
         print(f"{Fore.RED} Failed to Publish {Fore.WHITE}`{message}` {Fore.RED}on Topic {Fore.WHITE}`{topic}`")
 
-
-firmware_lines = []
-
 '''
     @brief Function to set and run the application.
 '''
@@ -130,9 +142,12 @@ def run_app():
             #msg = str(input("Enter: "))
             msg = "Hello!"
 
-            publish(client, topic, msg)
+            for i in range(len(firmware)):
+                msg = firmware[i]
+                publish(client, topic, msg)
+                time.sleep(0.1)
 
-            time.sleep(0.5)
+            time.sleep(30)
     except: 
         client.disconnect()
         client.loop_stop()
@@ -143,7 +158,8 @@ def run_app():
 
 # Run the application from the entry point.
 if __name__ == "__main__":
-
+    
+    load_firmware(file_name=f'CAN_PROTOCOL_TEST', file_extension=f'hex')
     # Run the MQTT application.
     run_app()
 
